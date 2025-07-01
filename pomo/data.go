@@ -1,4 +1,4 @@
-package pomodoro
+package pomo
 
 import "time"
 
@@ -15,4 +15,16 @@ func NewState(timerDuration time.Duration,
 		ticker: time.NewTicker(tickerDuration),
 	}
 
+}
+
+func (s *state) Stop() {
+	s.ticker.Stop()
+	s.timer.Stop()
+}
+
+type startCmd struct {
+	duration     int
+	unit         string
+	breakTime    int
+	reminderTime int
 }

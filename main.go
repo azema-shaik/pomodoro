@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	pomo "github.com/azema-shaik/pomodoro/pomodoro"
+	pomo "github.com/azema-shaik/pomo/pomo"
 )
 
 func main() {

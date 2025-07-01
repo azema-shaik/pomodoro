@@ -1,4 +1,4 @@
-package pomodoro
+package pomo
 
 import (
 	"fmt"
@@ -11,13 +11,11 @@ import (
 var loggers []*logging.Logger
 
 func getFileName() string {
-	fmt.Println(os.Getwd())
-	return fmt.Sprintf("logs\\%s", time.Now().Format("JAN_02_01_2006")+".log")
+	return fmt.Sprintf("logs\\%s", time.Now().Format("Jul_02_01_2006")+".log")
 }
 
 func flagType(filename string) (flag int) {
 	_, err := os.Stat(filename)
-	fmt.Println("err = ", err)
 	if err != nil {
 		return os.O_TRUNC
 	}
@@ -30,8 +28,7 @@ func NewLogger(module string) *logging.Logger {
 	logger := logging.GetLogger("pomodoro." + module)
 	logger.SetLevel(logging.DEBUG)
 	fileName := getFileName()
-	fileHandler, err := logging.GetFileHandler(fileName, os.O_CREATE|os.O_WRONLY|flagType(fileName), 0666)
-	fmt.Println("err = ", err)
+	fileHandler, _ := logging.GetFileHandler(fileName, os.O_CREATE|os.O_WRONLY|flagType(fileName), 0666)
 	fileHandler.SetLogLevel(logging.DEBUG)
 	fileHandler.SetFormatter(&logging.StdFormatter{
 		FormatString: "[%(asctime)s] : [%(levelname)s]: [%(lineno)d] : [%(funcName)s]: [%(msg)s]",
