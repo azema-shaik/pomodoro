@@ -21,10 +21,3 @@ func (s *state) Stop() {
 	s.ticker.Stop()
 	s.timer.Stop()
 }
-
-type startCmd struct {
-	duration     int
-	unit         string
-	breakTime    int
-	reminderTime int
-}
