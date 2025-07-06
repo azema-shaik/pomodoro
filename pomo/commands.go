@@ -13,7 +13,7 @@ import (
 
 var cmdLogger *logging.Logger
 
-func Start(params map[string]any) *state {
+func Start(db *sql.DB, params map[string]any) *state {
 
 	timeUnit := params["time_unit"].(string)
 	duration := params["duration"].(int)
@@ -49,6 +49,7 @@ func Start(params map[string]any) *state {
 
 			<-time.After(time.Duration(breakTime) * time.Minute)
 			fmt.Printf("\033[38;5;10mYou have succesfully completed a pomodoro session🥳\033[0m\n")
+			update(db, params)
 			return stateTimer
 
 		case ticker := <-stateTimer.ticker.C:

@@ -3,6 +3,7 @@ package pomo
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"time"
 
 	logging "github.com/azema-shaik/logger"
@@ -11,7 +12,13 @@ import (
 var loggers []*logging.Logger
 
 func getFileName() string {
-	return fmt.Sprintf("logs\\%s", time.Now().Format("Jul_02_01_2006")+".log")
+	filename := time.Now().Format("Jul_02_01_2006") + ".log"
+	//check logs exists.
+	logsDir := filepath.Join(path, "logs")
+	if _, err := os.Stat(logsDir); err != nil {
+		os.Mkdir(logsDir, 0666)
+	}
+	return filepath.Join(logsDir, filename)
 }
 
 func flagType(filename string) (flag int) {

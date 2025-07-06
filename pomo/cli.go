@@ -14,9 +14,9 @@ type cmd int
 
 const (
 	_ = iota
-	start
-	status
-	reset
+	START
+	STATUS
+	RESET
 )
 
 const validMainCommands = "start|status"
@@ -136,18 +136,18 @@ func Cli() (cmdType cmd, params map[string]any) {
 	switch mainCommand {
 	case "start":
 		params = startCmd(args)
-		cmdType = start
+		cmdType = START
 	case "status":
 		params = statusAndReset(args, "status")
-		cmdType = status
+		cmdType = STATUS
 	case "reset":
 		params = statusAndReset(args, "reset")
-		cmdType = reset
+		cmdType = RESET
 
 	}
 
 	cliLogger.Info(fmt.Sprintf("command select: %s, params: %v",
-		map[cmd]string{start: "start", status: "status", reset: "reset"}[cmdType], params))
+		map[cmd]string{START: "start", STATUS: "status", RESET: "reset"}[cmdType], params))
 	return cmdType, params
 
 }
