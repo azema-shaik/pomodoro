@@ -1,5 +1,3 @@
-[!Pomodoro Icon][./assets/pomodoro.png]
-# POMODORO⏳
 # Pomodoro⏳
 
 ![Pomodoro Icon](./assets/pomodoro.png)

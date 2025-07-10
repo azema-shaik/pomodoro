@@ -83,14 +83,14 @@ func Status(db *sql.DB, params map[string]any) {
 		var session_duration, session_break, session_reminder int
 		var timestamp time.Time
 
-		err := rows.Scan(&session_name, &timestamp, &session_duration, &session_break, &unit, session_reminder)
+		err := rows.Scan(&session_name, &timestamp, &session_duration, &session_break, &unit, &session_reminder)
 		if err != nil {
 			cmdLogger.Error(fmt.Sprintf("error when fetching rows. err: %s", err.Error()))
 			fmt.Println("\033[38;5;9mIssue when fetching errors.Consult logs.\033[0m")
 			os.Exit(1)
 		}
 
-		fmt.Printf("\033[38;5;10mSession Name: %s, Session Time: %s\nSession Duration: %d %s, Session Break: %d minute(s), Session Reminder: %d minute(s)\033[0m",
+		fmt.Printf("\033[38;5;10mSession Name: %s, Session Time: %s\nSession Duration: %d %s, Session Break: %d minute(s), Session Reminder: %d minute(s)\033[0m\n",
 			session_name, utcToIst(timestamp), session_duration, unit, session_break, session_reminder)
 		fmt.Println(strings.Repeat("=", 50))
 
@@ -116,7 +116,7 @@ func Reset(db *sql.DB, params map[string]any) {
 	session_name := params["session_name"].(string)
 	query := map[bool]string{
 		true:  `DELETE FROM pomo WHERE username = :username RETURNING session_name, timestamp, time_duration, time_unit`,
-		false: `DELETE FROM pomo WHERE username = :username AND session_name = :name RETURNING session_name, timestamp, time_duration, time_unit`,
+		false: `DELETE FROM pomo WHERE username = :username AND session_name = :username RETURNING session_name, timestamp, time_duration, time_unit`,
 	}[session_name == "all"]
 
 	rows := fetchRows(db, query, session_name)

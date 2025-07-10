@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/azema-shaik/logger"
@@ -31,7 +32,12 @@ func fetchRows(db *sql.DB, query, session_name string) *sql.Rows {
 
 	rows, err := stmt.Query(sql.Named("username", os.Getenv("USERNAME")),
 		sql.Named("session_name", session_name))
-	if err != nil {
+	if err != nil && strings.Contains(err.Error(), "(SQLITE_BUSY)") {
+		cmdLogger.Error(fmt.Sprintf("DB busy. err: %s", err.Error()))
+		fmt.Println("\033[38;5;9mError when trying to initialize connection to the app. Database busy. Please try again later\033[0m")
+		os.Exit(0)
+
+	} else if err != nil {
 		cmdLogger.Error(fmt.Sprintf("error when trying to query db. err: %s", err.Error()))
 		fmt.Println("\033[38;5;9mError when trying to initialize connection to the app. Consult logs.\033[0m")
 		os.Exit(1)
@@ -53,6 +59,10 @@ func checkConfigExists() (config map[string]string, isExist bool) {
 		return config, false
 	}
 
+	if config["db"] == "" {
+		config["db"] = "pomo.db"
+	}
+
 	return config, true
 
 }
@@ -67,10 +77,12 @@ func notify(title, body string, ansiColorCode int) {
 
 func init() {
 	utilLogger = NewLogger("utils")
-	timeZone, err := time.LoadLocation("Asia/Kolkata")
+	timeZ, err := time.LoadLocation("Asia/Kolkata")
 	if err != nil {
 		utilLogger.Error(fmt.Sprintf("error initalizing timezone defaulting to utc. err: %s", err))
 	}
+
+	timeZone = timeZ
 
 	timeZone = map[bool]*time.Location{
 		true:  time.UTC,
