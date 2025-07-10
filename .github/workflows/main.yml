@@ -1,0 +1,45 @@
+name: Build Pomodoro CLI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        go-version: [1.21.x]
+        os: [ubuntu-latest, macos-latest, windows-latest]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go ${{ matrix.go-version }}
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ matrix.go-version }}
+
+      - name: Cache Go modules
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+
+      - name: Build binary
+        run: |
+          GOOS=${{ matrix.os == 'windows-latest' && echo windows || echo ${{ matrix.os == 'macos-latest' && echo darwin || echo linux }} }} \
+          GOARCH=amd64 \
+          go build -o pomodoro-${{ matrix.os }}-${{ matrix.go-version }} ./...
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: pomodoro-${{ matrix.os }}-${{ matrix.go-version }}
+          path: pomodoro-${{ matrix.os }}-${{ matrix.go-version }}
