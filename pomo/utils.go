@@ -71,7 +71,7 @@ func notify(title, body string, ansiColorCode int) {
 	beeep.AppName = "pomodoro"
 	err := beeep.Notify(title, body, filepath.Join("assets", "pomodoro.png"))
 	if err != nil {
-		panic(err)
+		fmt.Printf("\033[38;5;%d%s\033[0m\n", ansiColorCode, body)
 	}
 }
 
