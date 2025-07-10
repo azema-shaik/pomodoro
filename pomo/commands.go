@@ -43,19 +43,19 @@ func Start(db *sql.DB, params map[string]any) *state {
 		select {
 		case <-stateTimer.timer.C:
 			stateTimer.Stop()
-			fmt.Printf("\033[38;5;10mYou have completed %d %s(s) sucessfully\033[0m\n",
-				duration, timeUnit)
-			fmt.Printf("\033[38;5;14mTake a break for %d minutes.\033[0m\n", breakTime)
+			notify("Session Complete.", fmt.Sprintf("You have completed %d %s(s) sucessfully",
+				duration, timeUnit), 10)
+			notify("Take break", fmt.Sprintf("Take a break for %d minutes.", breakTime), 14)
 
 			<-time.After(time.Duration(breakTime) * time.Minute)
-			fmt.Printf("\033[38;5;10mYou have succesfully completed a pomodoro session🥳\033[0m\n")
+			notify("Complete Session.!", "You have succesfully completed a pomodoro session!", 10)
 			update(db, params)
 			return stateTimer
 
 		case ticker := <-stateTimer.ticker.C:
 			timeLeft := userTimeLimit.Sub(ticker)
 			if timeLeft.Minutes() < float64(reminderTime) {
-				fmt.Printf("\033[38;5;14mYou have less than 2 minutes left: %.f\033[0m\n", timeLeft.Minutes())
+				notify("Reminder", fmt.Sprintf("You have less than 2 minutes left: %.f.", timeLeft.Minutes()), 14)
 			} else {
 				fmt.Printf("\033[38;5;10mReminder Time: [%s],TimeLeft: [%.0f]\033[0m\n",
 					ticker.Format(timeFormat), timeLeft.Minutes())

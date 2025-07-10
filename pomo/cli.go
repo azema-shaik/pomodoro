@@ -19,13 +19,13 @@ const (
 	RESET
 )
 
-const validMainCommands = "start|status"
+const validMainCommands = "start|status|reset|help|h"
 
 var cliLogger *logging.Logger
 
 func validate(arg string) (valid bool, message string) {
 	validCommands := strings.Split(validMainCommands, "|")
-	valid = slices.Contains(validCommands, arg)
+	valid = slices.Contains(validCommands, strings.Replace(arg, "-", "", 2))
 	if !valid {
 		message = fmt.Sprintf("Invalid main command.[MAIN_COMMAND] should be one of {%s}", validMainCommands)
 	}
@@ -115,6 +115,10 @@ func statusAndReset(args []string, cmdName string) (params map[string]any) {
 
 }
 
+func help() {
+	fmt.Println("There are three main commands:\n1. start,2. status,3. reset\nIf further help on each command is required.Use following command:\npomo [MAIN_COMMAND] --help")
+}
+
 func init() {
 	cliLogger = NewLogger("cli")
 }
@@ -143,6 +147,8 @@ func Cli() (cmdType cmd, params map[string]any) {
 	case "reset":
 		params = statusAndReset(args, "reset")
 		cmdType = RESET
+	default:
+		help()
 
 	}
 

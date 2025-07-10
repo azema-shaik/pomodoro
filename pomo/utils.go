@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/azema-shaik/logger"
+	"github.com/gen2brain/beeep"
 )
 
 var utilLogger *logger.Logger
@@ -39,9 +40,9 @@ func fetchRows(db *sql.DB, query, session_name string) *sql.Rows {
 }
 
 func checkConfigExists() (config map[string]string, isExist bool) {
-	file, err := os.Open(filepath.Join(path, "config.json"))
+	file, err := os.Open(filepath.Join(path, ".config", "session.json"))
 	if err != nil {
-		utilLogger.Info(fmt.Sprintf("config file does not exist"))
+		utilLogger.Info("config file does not exist")
 		return config, false
 	}
 
@@ -54,6 +55,14 @@ func checkConfigExists() (config map[string]string, isExist bool) {
 
 	return config, true
 
+}
+
+func notify(title, body string, ansiColorCode int) {
+	beeep.AppName = "pomodoro"
+	err := beeep.Notify(title, body, filepath.Join("assets", "pomodoro.png"))
+	if err != nil {
+		panic(err)
+	}
 }
 
 func init() {
